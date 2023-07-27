@@ -11,7 +11,7 @@ equipment_dict = {
     "knife": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed"},
     "chopping board": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed", "board"},
     "measuring spoons": {"tbsp", "tsp"},
-    "measuring cup": {"cup", "ml"},
+    "measuring cup": {"cup", "cups", "ml"},
     "scale": {"g", "gram", "grams"},
     "bowl": {"bowl"},
     "baking paper": {"baking paper", "baking parchment"},
