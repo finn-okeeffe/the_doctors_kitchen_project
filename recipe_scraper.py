@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+from equipment_parser import equipment_set
 from typing import List, Tuple
 
 class Ingredient():
@@ -12,6 +12,9 @@ class Ingredient():
     
     def __repr__(self):
         return f"<Ingredient object: name={self.name.__repr__()}; quantity={self.quantity.__repr__()}, measurement_unit={self.measurement_unit.__repr__()}, preparation={self.preparation.__repr__()}>"
+    
+    def __str__(self):
+        return f"{self.name}, {self.quantity} {self.preparation}"
 
 
 class IngredientListFactory():
@@ -118,6 +121,10 @@ class RecipeFactory():
         if code != 200:
             raise Exception(f"Request to url {url} raised unexpected code {code}")
         
+        method = self.recipe_method(soup)
+        ingredients_list = self.recipe_ingredients_list(soup)
+        
+        
         return Recipe(url,
                       soup,
                       self.recipe_title(soup),
@@ -127,9 +134,9 @@ class RecipeFactory():
                       self.recipe_servings(soup),
                       self.recipe_prep_time_in_mins(soup),
                       self.recipe_cook_time_in_mins(soup),
-                      self.recipe_ingredients_list(soup),
-                      self.recipe_equipment_list(soup),
-                      self.recipe_method(soup)
+                      ingredients_list,
+                      self.recipe_equipment_list(method, ingredients_list),
+                      method
         )
 
         
@@ -201,13 +208,9 @@ class RecipeFactory():
         
         return steps_list
     
-    def recipe_equipment_list(self, soup: BeautifulSoup) -> List[str]:
-        return ['']
-
-    
-
-
-
+    def recipe_equipment_list(self, method: List[str], ingredientsList: List[Ingredient]) -> List[str]:
+        ingredients_str_list = [str(ingredient) for ingredient in ingredientsList]
+        return equipment_set(method, ingredients_str_list)
 
 
 if __name__ == "__main__":
