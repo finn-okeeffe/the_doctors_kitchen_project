@@ -71,7 +71,8 @@ class Recipe():
                  cook_time: int,
                  ingredients: List[Ingredient],
                  equipment: List[str],
-                 method: List[str]):
+                 method: List[str]
+                 ):
         
         self.url = url
         self.soup = soup
@@ -125,21 +126,20 @@ class RecipeFactory():
         ingredients_list = self.recipe_ingredients_list(soup)
         
         
-        return Recipe(url,
-                      soup,
-                      self.recipe_title(soup),
-                      self.recipe_description(soup),
-                      self.recipe_diet(soup),
-                      self.recipe_meals(soup),
-                      self.recipe_servings(soup),
-                      self.recipe_prep_time_in_mins(soup),
-                      self.recipe_cook_time_in_mins(soup),
-                      ingredients_list,
-                      self.recipe_equipment_list(method, ingredients_list),
-                      method
+        return Recipe(
+            url,
+            soup,
+            self.recipe_title(soup),
+            self.recipe_description(soup),
+            self.recipe_diet(soup),
+            self.recipe_meals(soup),
+            self.recipe_servings(soup),
+            self.recipe_prep_time_in_mins(soup),
+            self.recipe_cook_time_in_mins(soup),
+            ingredients_list,
+            self.recipe_equipment_list(method, ingredients_list),
+            method
         )
-
-        
 
     def get_soup(self, url: str) -> Tuple[BeautifulSoup, int]:
         page = requests.get(url)
@@ -175,14 +175,12 @@ class RecipeFactory():
         prep_time_itemprop_tag = "prepTime"
         prep_time = soup.find(itemprop=prep_time_itemprop_tag).text.strip()
         prep_time = float(prep_time) if len(prep_time)>0 else None
-
         return prep_time
     
     def recipe_cook_time_in_mins(self, soup: BeautifulSoup) -> int:
         cook_time_itemprop_tag = "cookTime"
         cook_time = soup.find(itemprop=cook_time_itemprop_tag).text.strip()
         cook_time = float(cook_time) if len(cook_time)>0 else None
-
         return cook_time
     
     def recipe_ingredients_list(self, soup: BeautifulSoup) -> List[Ingredient]:
@@ -208,8 +206,8 @@ class RecipeFactory():
         
         return steps_list
     
-    def recipe_equipment_list(self, method: List[str], ingredientsList: List[Ingredient]) -> List[str]:
-        ingredients_str_list = [str(ingredient) for ingredient in ingredientsList]
+    def recipe_equipment_list(self, method: List[str], ingredients_list: List[Ingredient]) -> List[str]:
+        ingredients_str_list = [str(ingredient) for ingredient in ingredients_list]
         return equipment_set(method, ingredients_str_list)
 
 
