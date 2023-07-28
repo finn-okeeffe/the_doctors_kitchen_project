@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from equipment_parser import equipment_set
+from equipment_parser import equipment_set, load_equipment_dict, equipment_names
 from typing import List, Tuple
+import log
 
 class Ingredient():
     def __init__(self, name: str, quantity: float, measurement_unit: str=None, preparation: str=None):
@@ -14,7 +15,7 @@ class Ingredient():
         return f"<Ingredient object: name={self.name.__repr__()}; quantity={self.quantity.__repr__()}, measurement_unit={self.measurement_unit.__repr__()}, preparation={self.preparation.__repr__()}>"
     
     def __str__(self):
-        return f"{self.name}, {self.quantity} {self.preparation}"
+        return f"{self.name}, {self.quantity} {self.measurement_unit}, {self.preparation}"
 
 
 class IngredientListFactory():
@@ -100,12 +101,12 @@ class Recipe():
         rep += f"{self.description}\n"
 
         rep += self.subheader("equipment")
-        for e in self.equipment:
-            rep += f"- {e}\n"
+        for equipment_id in self.equipment:
+            rep += f"- {equipment_names[equipment_id]}\n"
         
         rep += self.subheader("ingredients")
         for ingredientObject in self.ingredients:
-            rep += f"- {ingredientObject.name}, {ingredientObject.quantity} {ingredientObject.measurement_unit}\n"
+            rep += f"- {str(ingredientObject)}\n"
         return rep
     
     def subheader(self, string: str) -> str:
@@ -117,6 +118,11 @@ class Recipe():
 
 
 class RecipeFactory():
+    def __init__(self):
+        load_equipment_dict()
+        self.ingredientListFactory = IngredientListFactory()
+        log.log(f"equipment names dictionary: {equipment_names}")
+
     def new_recipe(self, url: str) -> Recipe:
         soup, code = self.get_soup(url)
         if code != 200:
@@ -184,8 +190,7 @@ class RecipeFactory():
         return cook_time
     
     def recipe_ingredients_list(self, soup: BeautifulSoup) -> List[Ingredient]:
-        ingredientListFactory = IngredientListFactory()
-        return ingredientListFactory.new_ingredient_object_list(soup)
+        return self.ingredientListFactory.new_ingredient_object_list(soup)
     
     def recipe_description(self, soup: BeautifulSoup) -> str:
         itemprop_tag = "description"
@@ -212,6 +217,7 @@ class RecipeFactory():
 
 
 if __name__ == "__main__":
+    log.logging = True
     URL = "https://thedoctorskitchen.com/recipes/smoky-mushroom-and-tempeh-veggie-burgers/"
     recipeFactory = RecipeFactory()
     recipeObject = recipeFactory.new_recipe(URL).print()
