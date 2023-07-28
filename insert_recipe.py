@@ -3,21 +3,37 @@
 
 from recipe_scraper import RecipeFactory, Recipe, Ingredient
 import log
-from typing import List
+from typing import List, Tuple
 import psycopg2 as pg2
 import secret
 
 class RecipeInserter():
     def __init__(self, cur):
-        self.cur = cur
-        self.failed_urls = []
+        self.cur: pg2.cursor = cur
+        self.failed_recipes: List[Tuple[Recipe,int]] = []
 
-    def insert_recipe(self, recipeObject: Recipe) -> bool:
-        success = False
-        if not(success):
-            self.failed_urls.append(recipeObject.url)
+    def insert_recipe(self, recipeObject: Recipe) -> int:
+        ## Attempts to insert the given recipe, and returns an exit code; these are as follows:
+        # 1: success
+        # -1: already in database
+        # -2: not implemented
+        # -10: unknown error
+
+        if self.recipe_in_db(recipeObject):
+            exit_code = -1
+            self.failed_recipes.append((recipeObject, exit_code))
+        else:
+            exit_code = -2
+            self.failed_recipes.append((recipeObject, exit_code))
             log.log(f"Insertion failed: not implemented - url: {recipeObject.url}")
-        return success
+        return exit_code
+    
+    def recipe_in_db(self, recipeObject: Recipe) -> bool:
+        self.cur.execute("SELECT id FROM recipe WHERE url=%s",(recipeObject.url,))
+        results = self.cur.fetchall()
+        if len(results) != 0:
+            log.log(f"Insertion failed: already in database with recipe.id {results[0][0]} - url: {recipeObject.url}")
+            return False
     
 def insert_recipes(recipes_list: List[Recipe]):
     with pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password) as conn:
