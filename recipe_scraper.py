@@ -203,7 +203,7 @@ class RecipeFactory():
         name = "p"
         itemprop_tag = "description"
 
-        steps_soup_list = soup.find_all(name, itemprop="description")
+        steps_soup_list = soup.find_all(name, itemprop=itemprop_tag)
         steps_list = []
         for step in steps_soup_list:
             for item in step.contents:
