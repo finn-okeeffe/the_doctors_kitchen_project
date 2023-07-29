@@ -7,6 +7,7 @@ from recipe_scraper import RecipeFactory, Recipe
 from typing import List
 from random import sample
 import log
+from tqdm import tqdm
 
 class TheDoctorsKitchenScraper():
 
@@ -47,17 +48,32 @@ class TheDoctorsKitchenScraper():
             raise ValueError(f"Number of random samples n={n} larger than number of recipes {len(self.recipe_url_list)}")
         
         random_urls = sample(self.recipe_url_list, n)
-        n_recipes = [self.recipeFactory.new_recipe(url) for url in random_urls]
+
+        if log.log_progress:
+            iterator = tqdm(random_urls)
+        else:
+            iterator = random_urls
+
+        n_recipes = []
+        for url in iterator:
+            n_recipes.append(self.recipeFactory.new_recipe(url))
         return n_recipes
 
     def all_recipes(self) -> List[Recipe]:
-        all_recipes_list = [self.recipeFactory.new_recipe(url) for url in self.recipe_url_list]
+        if log.log_progress:
+            iterator = tqdm(self.recipe_url_list)
+        else:
+            iterator = self.recipe_url_list
+
+        all_recipes_list = []
+        for url in iterator:
+            all_recipes_list.append(self.recipeFactory.new_recipe(url))
         return all_recipes_list
 
 if __name__ == "__main__":
-    log.logging = True
+    log.log_progress = True
     testScraper = TheDoctorsKitchenScraper()
-    recipes = testScraper.n_random_recipes(5)
+    recipes = testScraper.n_random_recipes(60)
     
     for i,r in enumerate(recipes):
         print(f"{i}) {r.title} {r.url}")
