@@ -7,8 +7,26 @@ equipment_dict = {}
 equipment_names = {}
 logging = False
 
+backup_dict = {
+    "pan": {"pan", "frypan"},
+    "pot": {"pot", "boil", "saucepan"},
+    "blender": {"blend"},
+    "air fryer": {"air frier", "air fryer"},
+    "toaster": {"toaster", "toast"},
+    "oven": {"oven", "bake", "roast"},
+    "cast-iron pan": {"cast iron pan"},
+    "knife": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed"},
+    "chopping board": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed", "board"},
+    "measuring spoons": {"tbsp", "tsp"},
+    "measuring cup": {"cup", "ml"},
+    "scale": {"g", "gram", "grams"},
+    "bowl": {"bowl"},
+    "baking paper": {"baking paper", "baking parchment"},
+    "fridge": {"fridge", "refridgerator"},
+    "freezer": {"freezer"}
+}
 
-def load_equipment_dict():
+def equipment_dict_from_db():
     log.log("Connecting to database...")
     conn = pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password)
     cur = conn.cursor()
@@ -28,6 +46,16 @@ def load_equipment_dict():
     
     log.log("Completed, closing database connection")
     conn.close()
+
+def load_equipment_dict():
+    try:
+        equipment_dict_from_db()
+    except pg2.OperationalError as e:
+        log.log("Warning:" + str(e))
+        log.log("Using backup equipment dictionary")
+
+        global equipment_dict
+        equipment_dict = backup_dict
     
 
 character_replacement_dict = {
