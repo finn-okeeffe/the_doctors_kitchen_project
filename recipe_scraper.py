@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from equipment_parser import equipment_set, load_equipment_dict, get_equipment_name
 from typing import List, Tuple
 import log
+from re import search
 
 class Ingredient():
     def __init__(self, name: str, quantity: float, measurement_unit: str=None, preparation: str=None):
@@ -47,7 +48,9 @@ class IngredientListFactory():
         quantity = None
         measurement_unit = None
         if len(measurement) >= 1:
-            quantity = float(measurement[0])
+            quantity_match = search("[0-9]+", measurement[0])
+            if quantity_match:
+                quantity = float(quantity_match[0])
         if len(measurement) == 2:
             measurement_unit = measurement[1]
         elif len(measurement) > 2:
@@ -126,6 +129,7 @@ class RecipeFactory():
         self.ingredientListFactory = IngredientListFactory()
 
     def new_recipe(self, url: str) -> Recipe:
+        log.log(f"scraping url {url} ...")
         soup, code = self.get_soup(url)
         if code != 200:
             raise Exception(f"Request to url {url} raised unexpected code {code}")
