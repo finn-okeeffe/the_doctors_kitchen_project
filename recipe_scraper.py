@@ -1,3 +1,6 @@
+# Classes and functions to scrape a single recipe from The Doctors Kitchen
+# Finn O'Keeffe - 28/07/2023
+
 import requests
 from bs4 import BeautifulSoup
 from equipment_parser import equipment_set, load_equipment_dict, equipment_names
