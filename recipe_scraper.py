@@ -3,7 +3,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-from equipment_parser import equipment_set, load_equipment_dict, equipment_names
+from equipment_parser import equipment_set, load_equipment_dict
 from typing import List, Tuple
 import log
 
@@ -124,7 +124,6 @@ class RecipeFactory():
     def __init__(self):
         load_equipment_dict()
         self.ingredientListFactory = IngredientListFactory()
-        log.log(f"equipment names dictionary: {equipment_names}")
 
     def new_recipe(self, url: str) -> Recipe:
         soup, code = self.get_soup(url)
