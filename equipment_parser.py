@@ -45,7 +45,7 @@ def equipment_dict_from_db():
     for equipment_id in equipment_names:
         cur.execute(f"SELECT synonym FROM equipment_synonym WHERE equipment_id={equipment_id};")
         synonyms = {row[0] for row in cur.fetchall()}
-        equipment_dict[equipment_id] = synonyms
+        equipment_dict[equipment_name] = synonyms
     
     log.log("Completed, closing database connection")
     conn.close()
