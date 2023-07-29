@@ -41,7 +41,7 @@ class TheDoctorsKitchenScraper():
 if __name__ == "__main__":
     log.logging = True
     testScraper = TheDoctorsKitchenScraper()
-    # recipes = testScraper.all_recipes()
+    recipes = testScraper.n_random_recipes(5)
     # for i,r in enumerate(recipes):
     #     print(f"{i}) {r.title}")
     
