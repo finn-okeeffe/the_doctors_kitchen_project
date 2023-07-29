@@ -21,11 +21,19 @@ class RecipeInserter():
 
         if self.recipe_in_db(recipeObject):
             exit_code = -1
-            self.failed_recipes.append((recipeObject, exit_code))
         else:
-            exit_code = -2
-            self.failed_recipes.append((recipeObject, exit_code))
-            log.log(f"Insertion failed: not implemented - url: {recipeObject.url}")
+            try:
+                # insert to recipe table
+
+                # insert to recipe_equipment table
+                
+                # insert to ingredient table
+
+                exit_code = -2
+            except Exception as e:
+                exit_code = -10
+                log.log(f"Insertion of recipe at url {url} failed: {e}")
+        self.failed_recipes.append((recipeObject, exit_code))
         return exit_code
     
     def recipe_in_db(self, recipeObject: Recipe) -> bool:
@@ -34,9 +42,11 @@ class RecipeInserter():
         if len(results) != 0:
             log.log(f"Insertion failed: already in database with recipe.id {results[0][0]} - url: {recipeObject.url}")
             return False
-    
+
+
+
 def insert_recipes(recipes_list: List[Recipe]):
-    with pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password) as conn:
+    with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
             inserter = RecipeInserter(cur)
             for recipe in recipes_list:
