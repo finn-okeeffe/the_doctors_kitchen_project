@@ -7,6 +7,9 @@ equipment_dict = {}
 equipment_names = {}
 logging = False
 
+def get_equipment_name(equipment_id) -> str:
+    return equipment_names[equipment_id]
+
 backup_dict = {
     "pan": {"pan", "frypan"},
     "pot": {"pot", "boil", "saucepan"},
@@ -54,8 +57,9 @@ def load_equipment_dict():
         log.log("Warning:" + str(e))
         log.log("Using backup equipment dictionary")
 
-        global equipment_dict
+        global equipment_dict, equipment_names
         equipment_dict = backup_dict
+        equipment_names = {name:name for name in equipment_dict}
     
 
 character_replacement_dict = {

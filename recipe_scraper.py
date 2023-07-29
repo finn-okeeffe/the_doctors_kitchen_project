@@ -3,7 +3,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-from equipment_parser import equipment_set, load_equipment_dict
+from equipment_parser import equipment_set, load_equipment_dict, get_equipment_name
 from typing import List, Tuple
 import log
 
@@ -105,7 +105,7 @@ class Recipe():
 
         rep += self.subheader("equipment")
         for equipment_id in self.equipment:
-            rep += f"- {equipment_names[equipment_id]}\n"
+            rep += f"- {get_equipment_name(equipment_id)}\n"
         
         rep += self.subheader("ingredients")
         for ingredientObject in self.ingredients:
