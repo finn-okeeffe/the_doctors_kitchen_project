@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from recipe_scraper import RecipeFactory, Recipe
 from typing import List
 from random import sample
+from insert_recipe import insert_recipes
 import log
 from tqdm import tqdm
 
@@ -73,7 +74,8 @@ class TheDoctorsKitchenScraper():
 if __name__ == "__main__":
     log.log_progress = True
     testScraper = TheDoctorsKitchenScraper()
-    recipes = testScraper.n_random_recipes(60)
+    recipes = testScraper.n_random_recipes(20)
+    insert_recipes(recipes)
     
     for i,r in enumerate(recipes):
         print(f"{i}) {r.title} {r.url}")

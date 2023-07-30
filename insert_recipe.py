@@ -1,5 +1,4 @@
 # Commits new recipes to the db
-# Finn O'Keeffe - 28/07/2023
 
 from recipe_scraper import RecipeFactory, Recipe, Ingredient
 import log
