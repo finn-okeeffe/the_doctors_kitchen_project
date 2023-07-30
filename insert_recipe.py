@@ -44,8 +44,8 @@ class RecipeInserter(Inserter):
             self.insert_into_recipe_equipment_table(recipeObject)
             exit_code = 4
 
-        except Exception as e:
-            log.log(f"ERROR: Insertion of recipe at url {recipeObject.url} failed: {e}")
+        except pg2.Error as e:
+            log.log(f"ERROR: Insertion of recipe at url {recipeObject.url} failed: {e}\n{e.diag}")
             self.failed_recipes.append((recipeObject, exit_code))
         return exit_code
 
@@ -62,15 +62,16 @@ def insert_recipes(recipes_list: List[Recipe]):
                 iterator = recipes_list
             for recipe in iterator:
                 inserter.insert_recipe(recipe)
+                conn.commit()
 
 if __name__ == "__main__":
     log.logging = True
     log.log_progress = True
-    log.to_file = True
+    log.to_file = False
 
     recipeFactory = RecipeFactory()
 
-    test_urls = ["https://thedoctorskitchen.com/recipes/smoky-mushroom-and-tempeh-veggie-burgers/"]
+    test_urls = ["https://thedoctorskitchen.com/recipes/aubergine-walnut-ragu/"]
     recipe_list = []
     for url in test_urls:
         recipe_list.append(recipeFactory.new_recipe(url))

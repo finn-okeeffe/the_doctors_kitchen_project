@@ -174,9 +174,12 @@ class RecipeFactory():
         class_name = "inline-block mr-4 mt-2 xl:text-h3 lg:text-lg text-base text-white print:text-black"
         tag_soup = soup.find(class_=class_name)
         if tag_soup:
-            return tag_soup.contents[2].strip()
+            diet = tag_soup.contents[2].strip()
+            if diet == "":
+                diet = "None"
+            return diet
         else:
-            return None
+            return "None"
         
     def recipe_meals(self, soup: BeautifulSoup):
         class_name = "inline-block mr-2 mb-2 px-2 py-1.5 md:text-label text-labelsmall font-bold text-white bg-docGreen uppercase tracking-wider"

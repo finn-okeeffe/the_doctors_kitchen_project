@@ -73,9 +73,11 @@ class TheDoctorsKitchenScraper():
 
 if __name__ == "__main__":
     log.log_progress = True
+    log.logging = True
+    log.to_file = True
     testScraper = TheDoctorsKitchenScraper()
     print("Scraping Recipes...")
-    recipes = testScraper.n_random_recipes(1)
+    recipes = testScraper.n_random_recipes(20)
     print("Inserting recipes into db...")
     insert_recipes(recipes)
     
