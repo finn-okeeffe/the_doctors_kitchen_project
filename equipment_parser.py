@@ -30,6 +30,7 @@ backup_dict = {
 }
 
 def equipment_dict_from_db():
+    global eqiupment_dict, equipment_names
     log.log("Connecting to database...")
     conn = pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password)
     cur = conn.cursor()
@@ -39,11 +40,7 @@ def equipment_dict_from_db():
     results = cur.fetchall()
     for (equipment_id,equipment_name) in results:
         equipment_names[equipment_id] = equipment_name
-    log.log("Created equipment names dictionary")
-
-    log.log("Retrieving equipment synonyms...")
-    for equipment_id in equipment_names:
-        cur.execute(f"SELECT synonym FROM equipment_synonym WHERE equipment_id={equipment_id};")
+        cur.execute(f"SELECT synonym FROM equipment_synonym WHERE equipment_id=%s;",(equipment_id,))
         synonyms = {row[0] for row in cur.fetchall()}
         equipment_dict[equipment_name] = synonyms
     
@@ -118,7 +115,7 @@ def testing_procedure():
         "Air fry the onion.",
         "Boil the milk in a saucepan."
     ]
-
+    print(equipment_dict)
     print(equipment_set(method, ingredients))
 
 if __name__ == "__main__":
