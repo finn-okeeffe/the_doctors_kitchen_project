@@ -41,7 +41,8 @@ class Inserter():
             """INSERT INTO recipe(url, title, num_servings, prep_time, cook_time, method, last_update, diet_id, description)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (recipeObject.url, recipeObject.title, recipeObject.servings,
-                recipeObject.prep_time, recipeObject.cook_time, recipeObject.method,
+                recipeObject.prep_time, recipeObject.cook_time,
+                " ".join(recipeObject.method),
                 str(datetime.datetime.now()), diet_id, recipeObject.description)
         )
         
