@@ -1,6 +1,8 @@
 import psycopg2 as pg2
 import secret
 import log
+from recipe_scraper import Recipe
+import datetime
 
 class DatabaseIdFields():
     diet_ids = {}
@@ -26,6 +28,54 @@ class DatabaseIdFields():
         cur.execute("SELECT id, name FROM equipment;")
         for (equipment_id, equipment_name) in cur.fetchall():
             self.equipment_ids[equipment_name] = equipment_id
+
+
+class Inserter():
+    def __init__(self, cur):
+        self.cur: pg2.cursor = cur
+        self.ids = DatabaseIdFields(self.cur)
+
+    def insert_into_recipe_table(self, recipeObject: Recipe):
+        diet_id = self.ids.diet_ids[recipeObject.diet]
+        self.cur.execute(
+            """INSERT INTO recipe(url, title, num_servings, prep_time, cook_time, method, last_update, diet_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            (recipeObject.url, recipeObject.title, recipeObject.servings,
+                recipeObject.prep_time, recipeObject.cook_time, recipeObject.method,
+                str(datetime.datetime.now()), diet_id)
+        )
+        
+        # update recipe id dictionary
+        self.ids.get_recipe_ids(self.cur)
+    
+    def insert_into_recipe_equipment_table(self, recipeObject: Recipe):
+        recipe_id = self.ids.recipe_ids[recipeObject.url]
+        for equipment_name in recipeObject.equipment:
+            equipment_id = self.ids.equipment_ids[equipment_name]
+            self.cur.execute(
+                """INSERT INTO recipe_equipment(recipe_id, equipment_id)
+                VALUES (%s, %s);""",
+                (recipe_id, equipment_id)
+            )
+    
+    def insert_into_meal_table(self, recipeObject: Recipe):
+        recipe_id = self.ids.recipe_ids[recipeObject.url]
+        for meal_name in recipeObject.meals:
+            self.cur.execute(
+                """INSERT INTO meal(recipe_id, name)
+                VALUES (%s, %s);""",
+                (recipe_id, meal_name)
+            )
+    
+    def insert_into_ingredient_table(self, recipeObject: Recipe):
+        recipe_id = self.ids.recipe_ids[recipeObject.url]
+        for ingredientObject in recipeObject.ingredients:
+            self.cur.execute(
+                """INSERT INTO ingredient(recipe_id, name, quantity, unit)
+                VALUES (%s, %s, %s, %s)""",
+                (recipe_id, ingredientObject.name, ingredientObject.quantity, ingredientObject.measurement_unit)
+            )
+
 
 def testing_procedure():
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
