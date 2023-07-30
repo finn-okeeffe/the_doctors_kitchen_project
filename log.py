@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
-logging = False
-log_progress = False
+logging = True
+log_progress = True
 to_file = True
 
 
