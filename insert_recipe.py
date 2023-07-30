@@ -6,6 +6,7 @@ from typing import List, Tuple
 import psycopg2 as pg2
 import secret
 from db_functions import DatabaseIdFields, Inserter
+from tqdm import tqdm
 
 class RecipeInserter(Inserter):
     def __init__(self, cur):
@@ -69,11 +70,16 @@ def insert_recipes(recipes_list: List[Recipe]):
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
             inserter = RecipeInserter(cur)
-            for recipe in recipes_list:
+            if log.log_progress:
+                iterator = tqdm(recipes_list)
+            else:
+                iterator = recipes_list
+            for recipe in iterator:
                 inserter.insert_recipe(recipe)
 
 if __name__ == "__main__":
     log.logging = True
+    log.log_progress
     recipeFactory = RecipeFactory()
 
     test_urls = ["https://thedoctorskitchen.com/recipes/smoky-mushroom-and-tempeh-veggie-burgers/"]
