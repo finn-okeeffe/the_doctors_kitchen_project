@@ -46,7 +46,6 @@ class RecipeInserter(Inserter):
                 
                 # insert to recipe_equipment table
                 log.log("Inserting into recipe_equipment table...")
-                log.log(f"equipment: {recipeObject.equipment}")
                 self.insert_into_recipe_equipment_table(recipeObject)
                 exit_code = 4
 
@@ -67,6 +66,7 @@ class RecipeInserter(Inserter):
 
 
 def insert_recipes(recipes_list: List[Recipe]):
+    log.log("Connecting to database...")
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
             inserter = RecipeInserter(cur)

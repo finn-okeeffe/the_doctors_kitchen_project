@@ -74,7 +74,9 @@ class TheDoctorsKitchenScraper():
 if __name__ == "__main__":
     log.log_progress = True
     testScraper = TheDoctorsKitchenScraper()
-    recipes = testScraper.n_random_recipes(20)
+    print("Scraping Recipes...")
+    recipes = testScraper.n_random_recipes(1)
+    print("Inserting recipes into db...")
     insert_recipes(recipes)
     
     for i,r in enumerate(recipes):
