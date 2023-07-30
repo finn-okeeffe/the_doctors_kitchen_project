@@ -72,9 +72,10 @@ class Inserter():
         recipe_id = self.ids.recipe_ids[recipeObject.url]
         for ingredientObject in recipeObject.ingredients:
             self.cur.execute(
-                """INSERT INTO ingredient(recipe_id, name, quantity, unit)
-                VALUES (%s, %s, %s, %s)""",
-                (recipe_id, ingredientObject.name, ingredientObject.quantity, ingredientObject.measurement_unit)
+                """INSERT INTO ingredient(recipe_id, name, quantity, unit, preparation)
+                VALUES (%s, %s, %s, %s, %s)""",
+                (recipe_id, ingredientObject.name, ingredientObject.quantity,
+                 ingredientObject.measurement_unit, ingredientObject.preparation)
             )
 
 
