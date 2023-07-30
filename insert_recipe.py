@@ -50,7 +50,7 @@ class RecipeInserter(Inserter):
                 exit_code = 4
 
             except Exception as e:
-                log.log(f"Insertion of recipe at url {url} failed: {e}")
+                log.log(f"Insertion of recipe at url {recipeObject.url} failed: {e}")
         self.failed_recipes.append((recipeObject, exit_code))
         return exit_code
     
