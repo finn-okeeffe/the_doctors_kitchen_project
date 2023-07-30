@@ -38,11 +38,11 @@ class Inserter():
     def insert_into_recipe_table(self, recipeObject: Recipe):
         diet_id = self.ids.diet_ids[recipeObject.diet]
         self.cur.execute(
-            """INSERT INTO recipe(url, title, num_servings, prep_time, cook_time, method, last_update, diet_id)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            """INSERT INTO recipe(url, title, num_servings, prep_time, cook_time, method, last_update, diet_id, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (recipeObject.url, recipeObject.title, recipeObject.servings,
                 recipeObject.prep_time, recipeObject.cook_time, recipeObject.method,
-                str(datetime.datetime.now()), diet_id)
+                str(datetime.datetime.now()), diet_id, recipeObject.description)
         )
         
         # update recipe id dictionary
