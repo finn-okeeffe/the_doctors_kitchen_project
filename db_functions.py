@@ -35,6 +35,22 @@ class Inserter():
         self.cur: pg2.cursor = cur
         self.ids = DatabaseIdFields(self.cur)
 
+    def add_equipment(self, equipment_name: str):
+        if not(equipment_name in self.ids.equipment_ids):
+            self.cur.execute(
+                """INSERT INTO equipment(name)
+                VALUES (%s)""",
+                (equipment_name,)
+            )
+        self.ids.get_equipment_ids
+    
+    def add_synonym(self, equipment_name: str, synonym: str):
+        self.cur.execute(
+            """INSERT INTO equipment_synonym(equipment_id, synonym)
+            VALUES (%s, %s)""",
+            (self.ids.equipment_ids[equipment_name], synonym)
+        )
+
     def insert_into_recipe_table(self, recipeObject: Recipe):
         diet_id = self.ids.diet_ids[recipeObject.diet]
         self.cur.execute(
@@ -77,7 +93,6 @@ class Inserter():
                 (recipe_id, ingredientObject.name, ingredientObject.quantity,
                  ingredientObject.measurement_unit, ingredientObject.preparation)
             )
-
 
 def testing_procedure():
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
