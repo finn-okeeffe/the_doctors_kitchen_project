@@ -20,14 +20,13 @@ class SearchTags:
     meals: Tuple[str] = tuple()
     include_unspecified_meals: bool = False
 
-@st.cache_data
-def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
+
+def run_query(query_function, tagsObject: SearchTags, field_names: List[str]) -> pd.DataFrame:
     TOP_N = 8
-    
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
             cur.execute(
-                sql_queries.top_ingredients_query(
+                query_function(
                     tagsObject.include_unspecified_meals,
                     tagsObject.include_unspecified_diets
                 ),
@@ -35,9 +34,19 @@ def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
             )
             data_tuples = cur.fetchall()
             df = pd.DataFrame()
-            df['ingredient'] = [row[0] for row in data_tuples]
-            df['num_recipes'] = [row[1] for row in data_tuples]
+            for i,field in enumerate(field_names):
+                df[field] = [row[i] for row in data_tuples]
             return df
+
+@st.cache_data
+def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
+    df = run_query(sql_queries.top_ingredients_query, tagsObject, ["ingredient","num_recipes"])
+    return df
+
+@st.cache_data
+def get_top_equipment(tagsObject: SearchTags) -> pd.DataFrame:
+    df = run_query(sql_queries.top_equipment_query, tagsObject, ["equipment","num_recipes"])
+    return df
 
 
 def process_tags(tags: List[str]) -> SearchTags:
@@ -54,25 +63,45 @@ def process_tags(tags: List[str]) -> SearchTags:
             tagsObject.include_unspecified_diets = True
     return tagsObject
 
+
 # Header
 st.title('The Doctors Kitchen Dashboard')
 st.subheader('An analysis of recipes from [The Doctor\'s Kitchen](https://thedoctorskitchen.com/)')
 
 # Controls
 tags = st.multiselect("Select Tags:",all_meal_labels+all_diet_labels, all_meal_labels+all_diet_labels)
+searchTags = process_tags(tags)
 
 # top ingredients chart
-top_ingredients_df = get_top_ingredients(process_tags(tags))
-chart = alt.Chart(top_ingredients_df,
+top_ingredients_df = get_top_ingredients(searchTags)
+ingredients_chart = alt.Chart(top_ingredients_df,
                   title=alt.Title(
                       'What are the most used ingredients?'
                   ))\
     .mark_bar()\
     .encode(
-        y=alt.Y('num_recipes', title='Appearance in recipes'),
+        y=alt.Y('num_recipes', title='Number in recipes'),
         x=alt.X('ingredient', sort='-y', title=None),
         color=alt.Color('num_recipes', legend=None)
     )
-st.altair_chart(chart, use_container_width=True)
 
-st.text('test')
+# top equipment chart
+top_equipment_df = get_top_equipment(searchTags)
+equipment_chart = alt.Chart(top_equipment_df,
+                  title=alt.Title(
+                      'What are the most used equipment?'
+                  ))\
+    .mark_bar()\
+    .encode(
+        y=alt.Y('num_recipes', title='Number of recipes'),
+        x=alt.X('equipment', sort='-y', title=None),
+        color=alt.Color('num_recipes', legend=None)
+    )
+
+# time spent
+
+
+# Charts
+ingredients_tab, equipment_tab = st.tabs(["Ingredients", "Equipment"])
+ingredients_tab.altair_chart(ingredients_chart, use_container_width=True)
+equipment_tab.altair_chart(equipment_chart, use_container_width=True)
