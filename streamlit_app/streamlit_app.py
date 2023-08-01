@@ -71,7 +71,7 @@ chart = alt.Chart(top_ingredients_df,
     .encode(
         y=alt.Y('num_recipes', title='Appearance in recipes'),
         x=alt.X('ingredient', sort='-y', title=None),
-        color='num_recipes'
+        color=alt.Color('num_recipes', legend=None)
     )
 st.altair_chart(chart, use_container_width=True)
 
