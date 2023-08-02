@@ -137,18 +137,21 @@ col2.altair_chart(cook_time_chart, use_container_width=True)
 
 # search for ingredients
 def search_terms(search_string: str) -> List[str]:
-    terms = search_string.strip().split()
-    terms = [f"%{term}%" for term in terms]
+    terms = search_string.strip().split(",")
+    terms = [f"%{term.strip()}%" for term in terms]
     return terms
 
-def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
+
+def get_search_results(ingredient_search_string: str) -> pd.io.formats.style.Styler:
     terms = search_terms(ingredient_search_string)
     results = run_query(sql_queries.ingredient_search_query,
                         ["title", "url"],
-                        [terms],
-                        [terms[0]])
+                        [len(terms)],
+                        terms)
     return results
 
-
-ingredient_search = st.text_input('Search for an ingredient')
-st.dataframe(get_search_results(ingredient_search))
+st.subheader('Search for recipes by ingredients:')
+ingredient_search = st.text_input('Enter ingredients separated by a commas',
+             placeholder="olive oil, coriander, bean")
+st.text(search_terms(ingredient_search))
+st.dataframe(get_search_results(ingredient_search), hide_index=True, use_container_width=True)
