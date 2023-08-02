@@ -20,17 +20,33 @@ class SearchTags:
     meals: Tuple[str] = tuple()
     include_unspecified_meals: bool = False
 
+def process_tags(tags: List[str]) -> SearchTags:
+    tagsObject = SearchTags()
+    for tag in tags:
+        if tag in all_diets:
+            tagsObject.diets += (tag,)
+        elif tag in all_meals:
+            tagsObject.meals += (tag,)
+        elif tag == 'Unspecified Meals':
+            tagsObject.include_unspecified_meals = True
+        elif tag == 'No diet':
+            tagsObject.diets += (tag,)
+            tagsObject.include_unspecified_diets = True
+    return tagsObject
 
-def run_query(query_function, tagsObject: SearchTags, field_names: List[str], lim_results = True) -> pd.DataFrame:
-    TOP_N = 8
+allTags = process_tags(all_meal_labels+all_diet_labels)
+
+
+def run_query(query_function,
+              field_names: List[str],
+              query_function_args: List = None,
+              query_arguments: List = None
+              ) -> pd.DataFrame:
+    
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
-            query_arguments = (tagsObject.meals, tagsObject.diets, TOP_N) if lim_results else (tagsObject.meals, tagsObject.diets) 
             cur.execute(
-                query_function(
-                    tagsObject.include_unspecified_meals,
-                    tagsObject.include_unspecified_diets
-                ),
+                query_function(**query_function_args),
                 query_arguments
             )
             data_tuples = cur.fetchall()
@@ -38,6 +54,13 @@ def run_query(query_function, tagsObject: SearchTags, field_names: List[str], li
             for i,field in enumerate(field_names):
                 df[field] = [row[i] for row in data_tuples]
             return df
+
+def run_filtered_query(query_function, tagsObject: SearchTags, field_names: List[str], lim_results = True) -> pd.DataFrame:
+    TOP_N = 8
+    query_arguments = (tagsObject.meals, tagsObject.diets, TOP_N) if lim_results else (tagsObject.meals, tagsObject.diets) 
+    return run_query(query_function, field_names,
+                     query_function_args=[tagsObject.include_unspecified_meals, tagsObject.include_unspecified_diets],
+                     query_arguments=query_arguments)
 
 @st.cache_data
 def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
@@ -53,22 +76,6 @@ def get_top_equipment(tagsObject: SearchTags) -> pd.DataFrame:
 def get_times(tagsObject: SearchTags) -> pd.DataFrame:
     df = run_query(sql_queries.times, tagsObject, ["prep_time","cook_time"], lim_results=False)
     return df
-
-
-
-def process_tags(tags: List[str]) -> SearchTags:
-    tagsObject = SearchTags()
-    for tag in tags:
-        if tag in all_diets:
-            tagsObject.diets += (tag,)
-        elif tag in all_meals:
-            tagsObject.meals += (tag,)
-        elif tag == 'Unspecified Meals':
-            tagsObject.include_unspecified_meals = True
-        elif tag == 'No diet':
-            tagsObject.diets += (tag,)
-            tagsObject.include_unspecified_diets = True
-    return tagsObject
 
 
 # Header
@@ -126,3 +133,8 @@ equipment_tab.altair_chart(equipment_chart, use_container_width=True)
 col1, col2 = time_tab.columns(2)
 col1.altair_chart(prep_time_chart, use_container_width=True)
 col2.altair_chart(cook_time_chart, use_container_width=True)
+
+
+# # search for ingredients
+# ingredient_search = st.text_input('Search for an ingredient')
+# st.dataframe()
