@@ -21,16 +21,17 @@ class SearchTags:
     include_unspecified_meals: bool = False
 
 
-def run_query(query_function, tagsObject: SearchTags, field_names: List[str]) -> pd.DataFrame:
+def run_query(query_function, tagsObject: SearchTags, field_names: List[str], lim_results = True) -> pd.DataFrame:
     TOP_N = 8
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
+            query_arguments = (tagsObject.meals, tagsObject.diets, TOP_N) if lim_results else (tagsObject.meals, tagsObject.diets) 
             cur.execute(
                 query_function(
                     tagsObject.include_unspecified_meals,
                     tagsObject.include_unspecified_diets
                 ),
-                (tagsObject.meals, tagsObject.diets, TOP_N)
+                query_arguments
             )
             data_tuples = cur.fetchall()
             df = pd.DataFrame()
@@ -47,6 +48,12 @@ def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
 def get_top_equipment(tagsObject: SearchTags) -> pd.DataFrame:
     df = run_query(sql_queries.top_equipment_query, tagsObject, ["equipment","num_recipes"])
     return df
+
+@st.cache_data
+def get_times(tagsObject: SearchTags) -> pd.DataFrame:
+    df = run_query(sql_queries.times, tagsObject, ["prep_time","cook_time"], lim_results=False)
+    return df
+
 
 
 def process_tags(tags: List[str]) -> SearchTags:
@@ -99,9 +106,23 @@ equipment_chart = alt.Chart(top_equipment_df,
     )
 
 # time spent
+times_df = get_times(searchTags)
+prep_time_chart = alt.Chart(times_df).mark_bar().encode(
+    x=alt.X("prep_time", bin=True),
+    y='count()'
+)
+cook_time_chart = alt.Chart(times_df).mark_bar().encode(
+    x=alt.X('cook_time', bin=True),
+    y='count()'
+)
 
 
 # Charts
-ingredients_tab, equipment_tab = st.tabs(["Ingredients", "Equipment"])
+ingredients_tab, equipment_tab, time_tab = st.tabs(
+    ["Ingredients", "Equipment", "Preparation and Cooking Time"]
+)
 ingredients_tab.altair_chart(ingredients_chart, use_container_width=True)
 equipment_tab.altair_chart(equipment_chart, use_container_width=True)
+col1, col2 = time_tab.columns(2)
+col1.altair_chart(prep_time_chart, use_container_width=True)
+col2.altair_chart(cook_time_chart, use_container_width=True)

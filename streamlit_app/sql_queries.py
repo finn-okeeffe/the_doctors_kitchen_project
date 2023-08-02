@@ -60,7 +60,6 @@ def times(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str
     WHERE
         (meal.name IN %s {extra_meal_str}) AND
         (diet.name IN %s {extra_diet_str})
-    GROUP BY recipe.id
-    LIMIT %s;
+    GROUP BY recipe.id;
     """
     return query
