@@ -95,7 +95,7 @@ class Inserter():
             )
 
 def testing_procedure():
-    with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
+    with pg2.connect(**secret.connection_kw_args) as conn:
         with conn.cursor() as cur:
             ids = DatabaseIdFields(cur)
             print(ids.diet_ids)
