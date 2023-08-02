@@ -32,7 +32,7 @@ backup_dict = {
 def equipment_dict_from_db():
     global eqiupment_dict, equipment_names
     log.log("Connecting to database...")
-    conn = pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password)
+    conn = pg2.connect(**secret.connection_kw_args)
     cur = conn.cursor()
 
     log.log("Retrieving equipment ids...")
@@ -48,15 +48,16 @@ def equipment_dict_from_db():
     conn.close()
 
 def load_equipment_dict():
-    try:
-        equipment_dict_from_db()
-    except pg2.OperationalError as e:
-        log.log("Warning:" + str(e))
-        log.log("Using backup equipment dictionary")
+    equipment_dict_from_db()
+    # try:
+    #     equipment_dict_from_db()
+    # except pg2.OperationalError as e:
+    #     log.log("Warning:" + str(e))
+    #     log.log("Using backup equipment dictionary")
 
-        global equipment_dict, equipment_names
-        equipment_dict = backup_dict
-        equipment_names = {name:name for name in equipment_dict}
+    #     global equipment_dict, equipment_names
+    #     equipment_dict = backup_dict
+    #     equipment_names = {name:name for name in equipment_dict}
     
 
 character_replacement_dict = {

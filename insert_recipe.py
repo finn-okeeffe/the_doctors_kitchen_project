@@ -53,7 +53,7 @@ class RecipeInserter(Inserter):
 
 def insert_recipes(recipes_list: List[Recipe]):
     log.log("Connecting to database...")
-    with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
+    with pg2.connect(**secret.connection_kw_args) as conn:
         with conn.cursor() as cur:
             inserter = RecipeInserter(cur)
             if log.log_progress:

@@ -77,7 +77,7 @@ if __name__ == "__main__":
     log.to_file = True
     testScraper = TheDoctorsKitchenScraper()
     print("Scraping Recipes...")
-    recipes = testScraper.n_random_recipes(20)
+    recipes = testScraper.all_recipes()
     print("Inserting recipes into db...")
     insert_recipes(recipes)
     
