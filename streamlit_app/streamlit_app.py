@@ -64,19 +64,23 @@ def run_filtered_query(query_function, tagsObject: SearchTags, field_names: List
 
 @st.cache_data
 def get_top_ingredients(tagsObject: SearchTags) -> pd.DataFrame:
-    df = run_query(sql_queries.top_ingredients_query, tagsObject, ["ingredient","num_recipes"])
+    df = run_filtered_query(sql_queries.top_ingredients_query, tagsObject, ["ingredient","num_recipes"])
     return df
 
 @st.cache_data
 def get_top_equipment(tagsObject: SearchTags) -> pd.DataFrame:
-    df = run_query(sql_queries.top_equipment_query, tagsObject, ["equipment","num_recipes"])
+    df = run_filtered_query(sql_queries.top_equipment_query, tagsObject, ["equipment","num_recipes"])
     return df
 
 @st.cache_data
 def get_times(tagsObject: SearchTags) -> pd.DataFrame:
-    df = run_query(sql_queries.times, tagsObject, ["prep_time","cook_time"], lim_results=False)
+    df = run_filtered_query(sql_queries.times, tagsObject, ["prep_time","cook_time"], lim_results=False)
     return df
 
+@st.cache_data
+def num_recipes_selected(tagsObject: SearchTags) -> int:
+    df = run_filtered_query(sql_queries.num_recipes_selected, tagsObject, ["num"], lim_results=False)
+    return df.loc[0,"num"]
 
 # Header
 st.title('The Doctors Kitchen Dashboard')
@@ -85,6 +89,7 @@ st.subheader('An analysis of recipes from [The Doctor\'s Kitchen](https://thedoc
 # Controls
 tags = st.multiselect("Select Tags:",all_meal_labels+all_diet_labels, all_meal_labels+all_diet_labels)
 searchTags = process_tags(tags)
+st.write(num_recipes_selected(searchTags), "recipes selected")
 
 # top ingredients chart
 top_ingredients_df = get_top_ingredients(searchTags)
@@ -142,7 +147,7 @@ def search_terms(search_string: str) -> List[str]:
     return terms
 
 
-def get_search_results(ingredient_search_string: str) -> pd.io.formats.style.Styler:
+def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
     terms = search_terms(ingredient_search_string)
     results = run_query(sql_queries.ingredient_search_query,
                         ["title", "url"],
@@ -152,6 +157,9 @@ def get_search_results(ingredient_search_string: str) -> pd.io.formats.style.Sty
 
 st.subheader('Search for recipes by ingredients:')
 ingredient_search = st.text_input('Enter ingredients separated by a commas',
-             placeholder="olive oil, coriander, bean")
-st.text(search_terms(ingredient_search))
-st.dataframe(get_search_results(ingredient_search), hide_index=True, use_container_width=True)
+             placeholder="e.g. olive oil, coriander, bean")
+st.write(search_terms(ingredient_search))
+
+results = get_search_results(ingredient_search)
+st.write(len(results), "results found.")
+st.dataframe(results, hide_index=True, use_container_width=True)

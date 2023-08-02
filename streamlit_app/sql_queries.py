@@ -51,6 +51,19 @@ def top_equipment_query(include_unspecified_meal: bool, include_unspecified_diet
     """
     return query
 
+def num_recipes_selected(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str:
+    extra_meal_str = "OR meal.name IS NULL" if include_unspecified_meal else ""
+    extra_diet_str = "OR diet.name IS NULL" if include_unspecified_diet else ""
+    query = f"""
+    SELECT COUNT(DISTINCT(recipe.id)) FROM recipe
+    LEFT JOIN meal ON meal.recipe_id = recipe.id
+    LEFT JOIN diet ON diet.id = recipe.diet_id
+    WHERE
+        (meal.name IN %s {extra_meal_str}) AND
+        (diet.name IN %s {extra_diet_str})
+    """
+    return query
+
 
 def times(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str:
     extra_meal_str = "OR meal.name IS NULL" if include_unspecified_meal else ""
