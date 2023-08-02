@@ -43,7 +43,7 @@ def run_query(query_function,
               query_arguments: List = None
               ) -> pd.DataFrame:
     
-    with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
+    with pg2.connect(**secret.connection_kw_args) as conn:
         with conn.cursor() as cur:
             cur.execute(
                 query_function(*query_function_args),
