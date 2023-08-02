@@ -46,7 +46,7 @@ def run_query(query_function,
     with pg2.connect(database=secret.database_name, user=secret.username, password=secret.password) as conn:
         with conn.cursor() as cur:
             cur.execute(
-                query_function(**query_function_args),
+                query_function(*query_function_args),
                 query_arguments
             )
             data_tuples = cur.fetchall()
@@ -142,7 +142,10 @@ def search_terms(search_string: str) -> List[str]:
 
 def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
     terms = search_terms(ingredient_search_string)
-    results = pd.DataFrame()
+    results = run_query(sql_queries.ingredient_search_query,
+                        ["title", "url"],
+                        [terms],
+                        [terms[0]])
     return results
 
 

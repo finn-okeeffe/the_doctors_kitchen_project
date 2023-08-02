@@ -67,4 +67,11 @@ def times(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str
     return query
 
 def ingredient_search_query(terms: List[str]) -> str:
-    pass
+    query = f"""
+        SELECT title, url FROM recipe
+        WHERE id IN (
+            SELECT recipe_id FROM ingredient
+            WHERE name LIKE %s
+        )
+    """
+    return query
