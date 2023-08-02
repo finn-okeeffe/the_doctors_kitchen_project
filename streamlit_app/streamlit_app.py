@@ -135,6 +135,16 @@ col1.altair_chart(prep_time_chart, use_container_width=True)
 col2.altair_chart(cook_time_chart, use_container_width=True)
 
 
-# # search for ingredients
-# ingredient_search = st.text_input('Search for an ingredient')
-# st.dataframe()
+# search for ingredients
+def search_terms(search_string: str) -> List[str]:
+    terms = search_string.strip().split()
+    return terms
+
+def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
+    terms = search_terms(ingredient_search_string)
+    results = pd.DataFrame()
+    return results
+
+
+ingredient_search = st.text_input('Search for an ingredient')
+st.dataframe(get_search_results(ingredient_search))

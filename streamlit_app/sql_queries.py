@@ -1,3 +1,5 @@
+from typing import List
+
 def top_ingredients_query(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str:
     extra_meal_str = "OR meal.name IS NULL" if include_unspecified_meal else ""
     extra_diet_str = "OR diet.name IS NULL" if include_unspecified_diet else ""
@@ -63,3 +65,6 @@ def times(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str
     GROUP BY recipe.id;
     """
     return query
+
+def ingredient_search_query(terms: List[str]) -> str:
+    pass
