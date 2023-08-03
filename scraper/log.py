@@ -6,7 +6,7 @@ to_file = True
 
 
 file = None
-log_filepath = f"logs/log_{date.today().isoformat()}.log"
+log_filepath = f"../logs/log_{date.today().isoformat()}.log"
 
 def log(string: str):
     if logging:
