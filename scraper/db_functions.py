@@ -45,7 +45,7 @@ class Inserter():
                 VALUES (%s)""",
                 (equipment_name,)
             )
-        self.ids.get_equipment_ids
+        self.ids.get_equipment_ids()
     
     def add_synonym(self, equipment_name: str, synonym: str):
         self.cur.execute(
