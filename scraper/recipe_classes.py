@@ -56,8 +56,8 @@ class Recipe():
         rep += f"{self.description}\n"
 
         rep += self.subheader("equipment")
-        for equipment_id in self.equipment:
-            rep += f"- {equipment_id}\n"
+        for equipment_name in self.equipment:
+            rep += f"- {equipment_name}\n"
         
         rep += self.subheader("ingredients")
         for ingredientObject in self.ingredients:

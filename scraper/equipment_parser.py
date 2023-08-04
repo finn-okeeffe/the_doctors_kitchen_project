@@ -38,12 +38,12 @@ def equipment_set(method: List[str], ingredient_strings: List[str]) -> Set[int]:
     words = words_list(method) + words_list(ingredient_strings)
 
     equipment_set = set()
-    for equipment_id, phrases in equipment_dict.items():
+    for equipment_name, phrases in equipment_dict.items():
 
         for phrase in phrases:
             if phrase_in_str_list(phrase,words):
-                equipment_set.add(equipment_id)
-                log.log(f'Found equipment {equipment_id}')
+                equipment_set.add(equipment_name)
+                log.log(f'Found equipment {equipment_name}')
                 break
     
     return equipment_set
