@@ -68,15 +68,18 @@ class Inserter():
         # update recipe id dictionary
         self.ids.get_recipe_ids(self.cur)
     
-    def insert_into_recipe_equipment_table(self, recipeObject: Recipe):
-        recipe_id = self.ids.recipe_ids[recipeObject.url]
-        for equipment_name in recipeObject.equipment:
-            equipment_id = self.ids.equipment_ids[equipment_name]
-            self.cur.execute(
+    def insert_into_recipe_equipment(self, recipe_id: int, equipment_name):
+        equipment_id = self.ids.recipe_ids[equipment_name]
+        self.cur.execute(
                 """INSERT INTO recipe_equipment(recipe_id, equipment_id)
                 VALUES (%s, %s);""",
                 (recipe_id, equipment_id)
             )
+
+    def insert_into_recipe_equipment_table(self, recipeObject: Recipe):
+        recipe_id = self.ids.recipe_ids[recipeObject.url]
+        for equipment_name in recipeObject.equipment:
+            self.insert_into_recipe_equipment(recipe_id, equipment_name)
     
     def insert_into_meal_table(self, recipeObject: Recipe):
         recipe_id = self.ids.recipe_ids[recipeObject.url]
