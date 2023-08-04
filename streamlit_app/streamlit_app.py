@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import psycopg2 as pg2
-import secret
 from typing import Tuple, List
 import sql_queries
 from dataclasses import dataclass
@@ -43,7 +42,7 @@ def run_query(query_function,
               query_arguments: List = None
               ) -> pd.DataFrame:
     
-    with pg2.connect(**secret.connection_kw_args) as conn:
+    with pg2.connect(**st.secrets["postgres"]) as conn:
         with conn.cursor() as cur:
             cur.execute(
                 query_function(*query_function_args),
