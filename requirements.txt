@@ -1,0 +1,6 @@
+lxml
+BeautifulSoup4
+tqdm
+psycopg2
+requests
+streamlit
