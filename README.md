@@ -5,6 +5,8 @@
 - Find what cooking equipment each recipe uses, this isn't listed nicely in each recipe.
 - Be able to search and filter recipes by ingredient, equipment, time to cook, and more.
 
-If anyone wants to use this practically, The Doctor's Kitchen has an official app that you should use instead.
+The folder [scraper](scraper/) contains the code used to scrape and process recipe data from the website.
+
+The folder [streamlit_app](streamlit_app/) contains streamlist app code. Soon this app will be published online.
 
 This project is not endorsed by The Doctor's Kitchen.
