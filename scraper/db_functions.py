@@ -10,7 +10,7 @@ class DatabaseIdFields():
     equipment_ids = {}
 
     def __init__(self, cur):
-        self.refresh_ids(self,cur)
+        self.refresh_ids(cur)
 
     def refresh_ids(self, cur):
         self.get_diet_ids(cur)
