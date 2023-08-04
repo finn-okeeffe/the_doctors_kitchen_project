@@ -2,13 +2,8 @@ from typing import List, Set
 import psycopg2 as pg2
 import secret
 import log
+from db_functions import equipment_dict_from_db, equipment_dict
 
-equipment_dict = {}
-equipment_names = {}
-logging = False
-
-def get_equipment_name(equipment_id) -> str:
-    return equipment_names[equipment_id]
 
 backup_dict = {
     "pan": {"pan", "frypan"},
@@ -29,35 +24,10 @@ backup_dict = {
     "freezer": {"freezer"}
 }
 
-def equipment_dict_from_db():
-    global eqiupment_dict, equipment_names
-    log.log("Connecting to database...")
-    conn = pg2.connect(**secret.connection_kw_args)
-    cur = conn.cursor()
 
-    log.log("Retrieving equipment ids...")
-    cur.execute('SELECT id, name FROM equipment;')
-    results = cur.fetchall()
-    for (equipment_id,equipment_name) in results:
-        equipment_names[equipment_id] = equipment_name
-        cur.execute(f"SELECT synonym FROM equipment_synonym WHERE equipment_id=%s;",(equipment_id,))
-        synonyms = {row[0] for row in cur.fetchall()}
-        equipment_dict[equipment_name] = synonyms
-    
-    log.log("Completed, closing database connection")
-    conn.close()
 
 def load_equipment_dict():
     equipment_dict_from_db()
-    # try:
-    #     equipment_dict_from_db()
-    # except pg2.OperationalError as e:
-    #     log.log("Warning:" + str(e))
-    #     log.log("Using backup equipment dictionary")
-
-    #     global equipment_dict, equipment_names
-    #     equipment_dict = backup_dict
-    #     equipment_names = {name:name for name in equipment_dict}
     
 
 character_replacement_dict = {

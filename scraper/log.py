@@ -6,7 +6,7 @@ to_file = True
 
 
 file = None
-log_filepath = f"../logs/log_{date.today().isoformat()}.log"
+log_filepath = f"logs/log_{date.today().isoformat()}.log"
 
 def log(string: str):
     if logging:
@@ -21,7 +21,10 @@ def log_string(string: str):
 def log_to_file(string: str):
     global file
     if not(file):
-        file = open(log_filepath, 'a')
+        try:
+            file = open(log_filepath, 'a+')
+        except FileNotFoundError:
+            file = open(log_filepath, 'w')
         file.write(log_string("Loaded this log file"))
     file.write(log_string(string))
 
