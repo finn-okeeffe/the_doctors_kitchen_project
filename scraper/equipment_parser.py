@@ -1,30 +1,6 @@
 from typing import List, Set
-import psycopg2 as pg2
-import secret
 import log
 from db_functions import equipment_dict_from_db, equipment_dict
-
-
-backup_dict = {
-    "pan": {"pan", "frypan"},
-    "pot": {"pot", "boil", "saucepan"},
-    "blender": {"blend"},
-    "air fryer": {"air frier", "air fryer"},
-    "toaster": {"toaster", "toast"},
-    "oven": {"oven", "bake", "roast"},
-    "cast-iron pan": {"cast iron pan"},
-    "knife": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed"},
-    "chopping board": {"slice", "sliced", "chop", "chopped", "dice", "diced", "cube", "cubed", "board"},
-    "measuring spoons": {"tbsp", "tsp"},
-    "measuring cup": {"cup", "ml"},
-    "scale": {"g", "gram", "grams"},
-    "bowl": {"bowl"},
-    "baking paper": {"baking paper", "baking parchment"},
-    "fridge": {"fridge", "refridgerator"},
-    "freezer": {"freezer"}
-}
-
-
 
 def load_equipment_dict():
     equipment_dict_from_db()
@@ -34,7 +10,8 @@ character_replacement_dict = {
     "-": " "
 }
 
-def equipment_set(method: List[str], ingredient_strings: List[str]) -> Set[int]:
+def equipment_set(method: List[str], ingredient_strings: List[str]) -> Set[str]:
+    # returns a set of equipment name strings in the recipe with the given method and ingredient string
     words = words_list(method) + words_list(ingredient_strings)
 
     equipment_set = set()
