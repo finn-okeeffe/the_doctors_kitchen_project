@@ -40,7 +40,7 @@ def get_recipe_equipment(method: str, ingredients: pd.DataFrame) -> Set[str]:
 
 def get_all_recipe_equipment(method_df: pd.DataFrame, ingredient_df: pd.DataFrame) -> pd.DataFrame:
     recipe_equipment = pd.DataFrame(columns=['recipe_id', 'equipment_name'])
-    for _, row in method_df.iterrows():
+    for _, row in log.loop_progress_iterator(method_df.iterrows()):
         recipe_id = row['recipe_id']
         method_text = row['method']
         ingredients = ingredient_df.loc[ingredient_df['recipe_id'] == recipe_id]
@@ -53,7 +53,7 @@ def get_all_recipe_equipment(method_df: pd.DataFrame, ingredient_df: pd.DataFram
     return recipe_equipment
 
 def insert_recipe_equipment(recipe_equipment: pd.DataFrame, inserter: Inserter):
-    for _,row in recipe_equipment.iterrows():
+    for _,row in log.loop_progress_iterator(recipe_equipment.iterrows()):
         inserter.insert_into_recipe_equipment(row['recipe_id'], row['equipment_name'])
 
 def refresh_equipment(conn, cur):
