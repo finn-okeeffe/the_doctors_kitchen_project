@@ -1,9 +1,14 @@
 from datetime import date, datetime
+from tqdm import tqdm
 
 logging = True
 log_progress = True
 to_file = True
 
+def loop_progress_iterator(iterator):
+    if log_progress:
+        return tqdm(iterator) 
+    return iterator
 
 file = None
 log_filepath = f"logs/log_{date.today().isoformat()}.log"
