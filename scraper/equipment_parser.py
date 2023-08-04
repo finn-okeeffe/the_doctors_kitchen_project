@@ -12,6 +12,10 @@ character_replacement_dict = {
 
 def equipment_set(method: List[str], ingredient_strings: List[str]) -> Set[str]:
     # returns a set of equipment name strings in the recipe with the given method and ingredient string
+    # method and ingredients are passed lists of strings. e.g.,
+    #   method = ['Chop the onion.', 'Fry it with the garlic.']
+    #   ingredient_strings = ['1 onion diced', '2 tsp minced garlic']
+    
     words = words_list(method) + words_list(ingredient_strings)
 
     equipment_set = set()
