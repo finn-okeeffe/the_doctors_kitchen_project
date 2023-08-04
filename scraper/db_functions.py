@@ -68,7 +68,7 @@ class Inserter():
         # update recipe id dictionary
         self.ids.get_recipe_ids(self.cur)
     
-    def insert_into_recipe_equipment(self, recipe_id: int, equipment_name):
+    def insert_into_recipe_equipment(self, recipe_id: int, equipment_name: str):
         equipment_id = self.ids.recipe_ids[equipment_name]
         self.cur.execute(
                 """INSERT INTO recipe_equipment(recipe_id, equipment_id)
