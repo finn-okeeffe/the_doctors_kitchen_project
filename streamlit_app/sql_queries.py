@@ -78,7 +78,8 @@ def ingredient_search_query(num_terms: int) -> str:
         for i in range(num_terms-1):
             where_clause = where_clause + f" AND recipe.id IN ({sub_query})"
     query = f"""
-        SELECT recipe.title, recipe.url FROM recipe
+        SELECT recipe.title, recipe.url, diet.name FROM recipe
+        INNER JOIN diet ON diet.id = recipe.diet_id
         {where_clause}
     """
     return query
