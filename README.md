@@ -1,5 +1,5 @@
 # the_doctors_kitchen_project
-Check out the Streamlit dashboard: https://finns-recipe-dashboard.streamlit.app/
+Check out the Streamlit app: https://finns-recipe-dashboard.streamlit.app/
 ---
 [The Doctor's Kitchen](https://thedoctorskitchen.com/) is a recipe website created by Dr. Rupy Aujla. The site aims to provide recipes which have evidence-based health benefits. As a fun side project, I thought I would scrape and analyse the recipes on this website. The goals for this project are:
 - Find the most and least used ingredients
