@@ -5,6 +5,7 @@ import psycopg2 as pg2
 from typing import Tuple, List
 import sql_queries
 from dataclasses import dataclass
+from math import ceil
 
 all_diets = ('Vegan', 'Vegetarian', 'Pescatarian', 'None')
 all_meals = ('Dinner', 'Lunch', 'Breakfast', 'Snack')
@@ -159,5 +160,12 @@ ingredient_search = st.text_input('Enter ingredients separated by a commas',
              placeholder="e.g. olive oil, coriander, bean")
 
 results = get_search_results(ingredient_search)
-st.write(len(results), "results found.")
-st.dataframe(results, hide_index=True, use_container_width=True)
+st.write(len(results), "results found")
+
+# display tidied results
+num_pages = ceil(len(results) / 10)
+tabs = st.tabs([f'page {i+1}' for i in range(num_pages)])
+for i,row in results.iterrows():
+    tab_num = i // 10
+    tabs[tab_num].write(f"{i+1}) [{row['title']}]({row['url']})")
+# st.dataframe(results, hide_index=True, use_container_width=True)
