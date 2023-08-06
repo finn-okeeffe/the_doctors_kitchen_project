@@ -5,6 +5,7 @@ import psycopg2 as pg2
 from typing import Tuple, List
 import sql_queries
 from dataclasses import dataclass
+from math import ceil
 
 all_diets = ('Vegan', 'Vegetarian', 'Pescatarian', 'None')
 all_meals = ('Dinner', 'Lunch', 'Breakfast', 'Snack')
@@ -14,9 +15,9 @@ all_diet_labels = ('Vegan', 'Vegetarian', 'Pescatarian', 'No diet')
 
 @dataclass
 class SearchTags:
-    diets: Tuple[str] = tuple()
+    diets: Tuple[str] = ("hack string",)
     include_unspecified_diets: bool = False
-    meals: Tuple[str] = tuple()
+    meals: Tuple[str] = ("hack string",)
     include_unspecified_meals: bool = False
 
 def process_tags(tags: List[str]) -> SearchTags:
@@ -29,7 +30,7 @@ def process_tags(tags: List[str]) -> SearchTags:
         elif tag == 'Unspecified Meals':
             tagsObject.include_unspecified_meals = True
         elif tag == 'No diet':
-            tagsObject.diets += (tag,)
+            tagsObject.diets += ('None',)
             tagsObject.include_unspecified_diets = True
     return tagsObject
 
@@ -98,9 +99,10 @@ ingredients_chart = alt.Chart(top_ingredients_df,
                   ))\
     .mark_bar()\
     .encode(
-        y=alt.Y('num_recipes', title='Number in recipes'),
+        y=alt.Y('num_recipes', title='Frequency in recipes'),
         x=alt.X('ingredient', sort='-y', title=None),
-        color=alt.Color('num_recipes', legend=None)
+        color=alt.Color('num_recipes', legend=None),
+        tooltip=['ingredient', 'num_recipes']
     )
 
 # top equipment chart
@@ -111,20 +113,22 @@ equipment_chart = alt.Chart(top_equipment_df,
                   ))\
     .mark_bar()\
     .encode(
-        y=alt.Y('num_recipes', title='Number of recipes'),
+        y=alt.Y('num_recipes', title='Frequency in recipes'),
         x=alt.X('equipment', sort='-y', title=None),
-        color=alt.Color('num_recipes', legend=None)
+        color=alt.Color('num_recipes', legend=None),
+        tooltip=['equipment', 'num_recipes']
     )
 
 # time spent
 times_df = get_times(searchTags)
-prep_time_chart = alt.Chart(times_df).mark_bar().encode(
-    x=alt.X("prep_time", bin=True),
+prep_time_chart = alt.Chart(times_df,title=alt.Title("Distribution of Preparation Time")).mark_bar().encode(
+    x=alt.X("prep_time", bin=True, title="Preparation Time"),
     y='count()'
 )
-cook_time_chart = alt.Chart(times_df).mark_bar().encode(
-    x=alt.X('cook_time', bin=True),
-    y='count()'
+cook_time_chart = alt.Chart(times_df,title=alt.Title("Distribution of Cooking Time")).mark_bar().encode(
+    x=alt.X('cook_time', bin=alt.BinParams(extent=[0,100]),
+            title="Cooking Time"),
+    y=alt.Y('count()')
 )
 
 
@@ -149,7 +153,7 @@ def search_terms(search_string: str) -> List[str]:
 def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
     terms = search_terms(ingredient_search_string)
     results = run_query(sql_queries.ingredient_search_query,
-                        ["title", "url"],
+                        ["title", "url", "diet"],
                         [len(terms)],
                         terms)
     return results
@@ -157,8 +161,22 @@ def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
 st.subheader('Search for recipes by ingredients:')
 ingredient_search = st.text_input('Enter ingredients separated by a commas',
              placeholder="e.g. olive oil, coriander, bean")
-st.write(search_terms(ingredient_search))
 
 results = get_search_results(ingredient_search)
-st.write(len(results), "results found.")
-st.dataframe(results, hide_index=True, use_container_width=True)
+st.write(len(results), "results found")
+
+# display tidied results
+style_of_diet = {
+    "Vegan": ":green[Vegan]",
+    "Vegetarian": ":orange[Vegetarian]",
+    "Pescatarian": ":blue[Pescatarian]",
+    "None": ""
+}
+num_pages = ceil(len(results) / 10)
+tabs = st.tabs([f'page {i+1}' for i in range(num_pages)])
+for i,row in results.iterrows():
+    tab_num = i // 10
+    col1, col2 = tabs[tab_num].columns([0.8, 0.2])
+    col1.write(f"{i+1}) [{row['title']}]({row['url']})")
+    col2.write(f"{style_of_diet[row['diet']]}")
+# st.dataframe(results, hide_index=True, use_container_width=True)
