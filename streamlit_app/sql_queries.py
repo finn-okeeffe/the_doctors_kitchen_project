@@ -69,17 +69,16 @@ def times(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str
     SELECT prep_time, cook_time FROM recipe
     INNER JOIN relevant_recipe ON recipe.id = relevant_recipe.id;
     """
-    print(query)
     return query
 
 def ingredient_search_query(num_terms: int) -> str:
-    sub_query = "SELECT recipe_id FROM ingredient WHERE name LIKE %s"
-    where_clause = f"WHERE id IN ({sub_query})" if num_terms > 0 else ""
+    sub_query = "SELECT ingredient.recipe_id FROM ingredient WHERE ingredient.name LIKE %s"
+    where_clause = f"WHERE recipe.id IN ({sub_query})" if num_terms > 0 else ""
     if num_terms > 1:
         for i in range(num_terms-1):
-            where_clause = where_clause + f" AND id IN ({sub_query})"
+            where_clause = where_clause + f" AND recipe.id IN ({sub_query})"
     query = f"""
-        SELECT title, url FROM recipe
+        SELECT recipe.title, recipe.url FROM recipe
         {where_clause}
     """
     return query
