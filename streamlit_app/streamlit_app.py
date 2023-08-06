@@ -157,7 +157,6 @@ def get_search_results(ingredient_search_string: str) -> pd.DataFrame:
 st.subheader('Search for recipes by ingredients:')
 ingredient_search = st.text_input('Enter ingredients separated by a commas',
              placeholder="e.g. olive oil, coriander, bean")
-st.write(search_terms(ingredient_search))
 
 results = get_search_results(ingredient_search)
 st.write(len(results), "results found.")
