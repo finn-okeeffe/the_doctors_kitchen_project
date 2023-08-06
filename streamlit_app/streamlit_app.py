@@ -4,6 +4,7 @@ import altair as alt
 import psycopg2 as pg2
 from typing import Tuple, List
 import sql_queries
+from sql_queries import SearchTags
 from dataclasses import dataclass
 
 all_diets = ('Vegan', 'Vegetarian', 'Pescatarian', 'None')
@@ -11,13 +12,6 @@ all_meals = ('Dinner', 'Lunch', 'Breakfast', 'Snack')
 
 all_meal_labels = ('Dinner', 'Lunch', 'Breakfast', 'Snack', 'Unspecified Meals')
 all_diet_labels = ('Vegan', 'Vegetarian', 'Pescatarian', 'No diet')
-
-@dataclass
-class SearchTags:
-    diets: Tuple[str] = tuple()
-    include_unspecified_diets: bool = False
-    meals: Tuple[str] = tuple()
-    include_unspecified_meals: bool = False
 
 def process_tags(tags: List[str]) -> SearchTags:
     tagsObject = SearchTags()
