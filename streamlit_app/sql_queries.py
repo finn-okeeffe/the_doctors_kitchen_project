@@ -8,13 +8,12 @@ def relevant_recipes(include_unspecified_meal: bool, include_unspecified_diet: b
     extra_diet_str = "OR diet.name IS NULL" if include_unspecified_diet else ""
     relevant_recipes_query = f"""
     WITH relevant_recipe AS (
-        SELECT recipe.id FROM recipe
+        SELECT DISTINCT(recipe.id) FROM recipe
         LEFT JOIN meal ON meal.recipe_id = recipe.id
         LEFT JOIN diet ON diet.id = recipe.diet_id
         WHERE
             (meal.name IN %s {extra_meal_str}) AND
             (diet.name IN %s {extra_diet_str})
-        GROUP BY recipe.id
     )"""
     return relevant_recipes_query
 
@@ -56,7 +55,7 @@ def num_recipes_selected(include_unspecified_meal: bool, include_unspecified_die
     query = f"""
     {relevant_recipes_definition}
 
-    SELECT COUNT(DISTINCT(id)) FROM relevant_recipe;
+    SELECT COUNT(*) FROM relevant_recipe;
     """
     return query
 

@@ -15,9 +15,9 @@ all_diet_labels = ('Vegan', 'Vegetarian', 'Pescatarian', 'No diet')
 
 @dataclass
 class SearchTags:
-    diets: Tuple[str] = tuple("hack string")
+    diets: Tuple[str] = ("hack string",)
     include_unspecified_diets: bool = False
-    meals: Tuple[str] = tuple("hack string")
+    meals: Tuple[str] = ("hack string",)
     include_unspecified_meals: bool = False
 
 def process_tags(tags: List[str]) -> SearchTags:
@@ -30,7 +30,7 @@ def process_tags(tags: List[str]) -> SearchTags:
         elif tag == 'Unspecified Meals':
             tagsObject.include_unspecified_meals = True
         elif tag == 'No diet':
-            tagsObject.diets += (tag,)
+            tagsObject.diets += ('None',)
             tagsObject.include_unspecified_diets = True
     return tagsObject
 
