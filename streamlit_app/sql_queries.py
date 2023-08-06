@@ -1,12 +1,7 @@
 from typing import List, Tuple
 from dataclasses import dataclass
 
-@dataclass
-class SearchTags:
-    diets: Tuple[str] = tuple()
-    include_unspecified_diets: bool = False
-    meals: Tuple[str] = tuple()
-    include_unspecified_meals: bool = False
+
 
 def relevant_recipes(include_unspecified_meal: bool, include_unspecified_diet: bool) -> str:
     extra_meal_str = "OR meal.name IS NULL" if include_unspecified_meal else ""
