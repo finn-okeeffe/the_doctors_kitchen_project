@@ -173,10 +173,14 @@ style_of_diet = {
     "None": ""
 }
 num_pages = ceil(len(results) / 10)
-tabs = st.tabs([f'page {i+1}' for i in range(num_pages)])
-for i,row in results.iterrows():
-    tab_num = i // 10
-    col1, col2 = tabs[tab_num].columns([0.8, 0.2])
-    col1.write(f"{i+1}) [{row['title']}]({row['url']})")
-    col2.write(f"{style_of_diet[row['diet']]}")
+
+if num_pages == 0:
+    st.warning("No results found, try a different combination of ingredients.")
+else:
+    tabs = st.tabs([f'page {i+1}' for i in range(num_pages)])
+    for i,row in results.iterrows():
+        tab_num = i // 10
+        col1, col2 = tabs[tab_num].columns([0.8, 0.2])
+        col1.write(f"{i+1}) [{row['title']}]({row['url']})")
+        col2.write(f"{style_of_diet[row['diet']]}")
 # st.dataframe(results, hide_index=True, use_container_width=True)
