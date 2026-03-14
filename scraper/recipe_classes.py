@@ -23,8 +23,8 @@ class Recipe():
                  diet: str,
                  meals: List[str],
                  servings: int,
-                 prep_time: int,
-                 cook_time: int,
+                 prep_time: int|None,
+                 cook_time: int|None,
                  ingredients: List[Ingredient],
                  equipment: List[str],
                  method: List[str]
@@ -46,7 +46,6 @@ class Recipe():
     def __str__(self):
         rep = f"# {self.title.upper()}\n"
         rep += f"{self.url}\n"
-        rep += f"Total time: {self.prep_time + self.cook_time} mins\n"
 
         rep += self.subheader("meals")
         for meal in self.meals:
@@ -62,6 +61,9 @@ class Recipe():
         rep += self.subheader("ingredients")
         for ingredientObject in self.ingredients:
             rep += f"- {str(ingredientObject)}\n"
+
+        rep += self.subheader("method")
+        rep += "\n".join([f"\t{i+1}. {step}\n" for i,step in enumerate(self.method)])
         return rep
     
     def subheader(self, string: str) -> str:

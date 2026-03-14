@@ -23,7 +23,7 @@ equipment_dict = {
 }
 
 
-conn = pg2.connect(database="the_doctors_kitchen", user=secret.username, password=secret.password)
+conn = pg2.connect(**secret.connection_kw_args)
 cur = conn.cursor()
 
 for name, synonyms in equipment_dict.items():

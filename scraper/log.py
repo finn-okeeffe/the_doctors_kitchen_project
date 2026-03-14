@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 logging = True
 log_progress = True
-to_file = True
+to_file = False
 
 def loop_progress_iterator(iterator):
     if log_progress:
